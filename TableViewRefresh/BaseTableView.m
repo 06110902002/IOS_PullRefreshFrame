@@ -36,36 +36,9 @@
     [self reloadData];
     
 
-    //[self addSubview:[self buildRefreshingView]];
-    
-    
-//    __weak __typeof(&*self)weakSelf = self;
-//    self.scrollFootView = [[ScrollViewRefreshView alloc] initWithFrame:self.frame];
-//    
-//    [self.scrollFootView loadMore:^{
-//        
-//        
-//        NSLog(@"69-------------------");
-//        double delayTime = 3.0;
-//        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, delayTime * NSEC_PER_SEC);
-//        dispatch_after(time, dispatch_get_main_queue(), ^{
-//            
-//            
-//            for (NSInteger i = 0; i < 3; i++) {
-//                
-//                BaseModel* appItem = [[BaseModel alloc] init];
-//                appItem.name = [NSString stringWithFormat:@"a:%d",i];
-//                [weakSelf.dataList addObject:appItem];
-//                
-//                
-//            }
-//            [weakSelf reloadData];
-//            [weakSelf.scrollFootView loadMoreComplete];
-//        });
-//    }];
+    [self addSubview:[self buildFootView]];
+    [[self buildFootView] loadMore:[self buildLoadMoreListener]];
 
-    
-    
 }
 
 -(BaseTabViewCell*) buildTableViewCell{
@@ -117,11 +90,33 @@
     return [self getCellHeight];
 }
 
-
-
 //-------------------uitableView 协议方法结束-----------------------
 
 
+-(ScrollViewRefreshView*) buildFootView{
+
+    if(!self.scrollFootView){
+        self.scrollFootView = [[ScrollViewRefreshView alloc] initWithFrame:self.frame];
+        [self.scrollFootView addTargetWith:self];
+    }
+    return self.scrollFootView;
+}
+
+-(void(^)()) buildLoadMoreListener{
+
+    LoadMoreBlock loadMore = ^(){
+        
+        
+        double delayTime = 3.0;
+        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, delayTime * NSEC_PER_SEC);
+        dispatch_after(time, dispatch_get_main_queue(), ^{
+            
+            [self buildFootView].loadMoreState = LoadMoreNoMoreData;
+        });
+    };
+    
+    return loadMore;
+}
 
 
 

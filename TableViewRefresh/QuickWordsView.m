@@ -65,31 +65,31 @@
     
     
     //添加上拉加载更多视图
-    self.scrollFootView = [[ScrollViewRefreshView alloc] initWithFrame:self.frame];
-    [self.scrollFootView addTargetWith:self];
-    [self.scrollFootView loadMore:^{
-        
-        if(weakSelf.dataList.count > 10){
-            
-            weakSelf.scrollFootView.loadMoreState = LoadMoreNoMoreData;
-            return ;
-        }
-       
-        double delayTime = 3.0;
-        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, delayTime * NSEC_PER_SEC);
-        dispatch_after(time, dispatch_get_main_queue(), ^{
-            
-            for(int i = 0;i < 3; i ++){
-                
-                QuickWordsModel* model = [[QuickWordsModel alloc] init];
-                model.sWords = [NSString stringWithFormat:@"loadmore data:%d",i];
-                [weakSelf.dataList addObject:model];
-            }
-            
-            [weakSelf reloadData];
-            [weakSelf.scrollFootView loadMoreComplete];
-        });
-    }];
+//    self.scrollFootView = [[ScrollViewRefreshView alloc] initWithFrame:self.frame];
+//    [self.scrollFootView addTargetWith:self];
+//    [self.scrollFootView loadMore:^{
+//        
+//        if(weakSelf.dataList.count > 10){
+//            
+//            weakSelf.scrollFootView.loadMoreState = LoadMoreNoMoreData;
+//            return ;
+//        }
+//       
+//        double delayTime = 3.0;
+//        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, delayTime * NSEC_PER_SEC);
+//        dispatch_after(time, dispatch_get_main_queue(), ^{
+//            
+//            for(int i = 0;i < 3; i ++){
+//                
+//                QuickWordsModel* model = [[QuickWordsModel alloc] init];
+//                model.sWords = [NSString stringWithFormat:@"loadmore data:%d",i];
+//                [weakSelf.dataList addObject:model];
+//            }
+//            
+//            [weakSelf reloadData];
+//            [weakSelf.scrollFootView loadMoreComplete];
+//        });
+//    }];
 
 
 }
@@ -108,6 +108,47 @@
 -(CGFloat) getCellHeight{
 
     return 40.0f;
+}
+
+
+//重载父类方法--本类使用父类的底部视图
+-(ScrollViewRefreshView*) buildFootView{
+    
+    return [super buildFootView];
+}
+
+//override method
+-(void(^)()) buildLoadMoreListener{
+    
+    
+    __weak __typeof(&*self)weakSelf = self;
+    
+    LoadMoreBlock loadMore = ^(){
+        
+        
+        if(weakSelf.dataList.count > 10){
+            
+            weakSelf.scrollFootView.loadMoreState = LoadMoreNoMoreData;
+            return ;
+        }
+        
+        double delayTime = 3.0;
+        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, delayTime * NSEC_PER_SEC);
+        dispatch_after(time, dispatch_get_main_queue(), ^{
+            
+            for(int i = 0;i < 3; i ++){
+                
+                QuickWordsModel* model = [[QuickWordsModel alloc] init];
+                model.sWords = [NSString stringWithFormat:@"loadmore data:%d",i];
+                [weakSelf.dataList addObject:model];
+            }
+            [weakSelf reloadData];
+            [weakSelf.scrollFootView loadMoreComplete];
+        });
+
+    };
+    
+    return loadMore;
 }
 
 @end

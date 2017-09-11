@@ -60,5 +60,22 @@
 
 
 
+/**
+ 上提加载更多底部视图，子类需要扩展此类，不然后返回的底部加载更多视图是一个默认的视图
+
+ @return 返回一个扩展了ScrollViewRefreshView的具体子类
+ */
+-(ScrollViewRefreshView*) buildFootView;
+
+-(void(^)()) buildLoadMoreListener;
+
+
+
+/**
+ 构建下拉刷新头部视图，子类需要扩展此类，不然后返回的下拉刷新视图是一个默认的视图
+
+ @return 返回一个扩展了ScrollViewHeadView的具体子类
+ */
+//-(ScrollViewHeadView*) buildHeadView;
 
 @end
